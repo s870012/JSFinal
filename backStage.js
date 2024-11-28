@@ -22,7 +22,6 @@ let getOrderList = () => {
 }
 
 // 渲染訂單資料
-let status = "未處理";
 const orderList = document.querySelector('.orderList');
 let renderOrderList = ()=>{
     let str='';
@@ -40,7 +39,7 @@ let renderOrderList = ()=>{
                         </td>
                         <td>2021/03/08</td>
                         <td class="orderStatus" >
-                            <a href="#" id="orderStatus" data-id="${item.id}" data-paid="${item.paid}">${status}</a>
+                            <a href="#" id="orderStatus" data-id="${item.id}" data-paid="${item.paid}">${item.paid == true ? "已處理" : "未處理"}</a>
                         </td>
                         <td>
                             <input type="button" class="delSingleOrder-Btn" value="刪除" data-id="${item.id}">
@@ -48,7 +47,6 @@ let renderOrderList = ()=>{
                     </tr>`
     })
     orderList.innerHTML = str;
-    console.log(orderDataList);
 }
 
 // 刪除所有訂單資料
@@ -88,8 +86,7 @@ let adjustOrderList = (orderId, paid) =>{
         }
       };
     axios.put(`${orederApi}/orders`, data, config)
-    .then( (res) =>{
-        console.log(res);
+    .then( () =>{
         getOrderList();
     })
     .catch( err => {
@@ -97,20 +94,19 @@ let adjustOrderList = (orderId, paid) =>{
     })
 }
 
-
 orderList.addEventListener("click", e => {
     const orderId = e.target.getAttribute("data-id");
     if(e.target.getAttribute("value") == "刪除"){
         deleteOrderListItem(orderId);
-    }else if(e.target.getAttribute("id") == "orderStatus" && e.target.getAttribute("data-paid") == "false"){
-        status = "已處理";
+    }else if(e.target.getAttribute("data-paid") == "false"){
         const paid = true;
         adjustOrderList(orderId, paid);
-    }else if (e.target.getAttribute("id") == "orderStatus" && e.target.getAttribute("data-paid") == "true" ){
-        alert("請確定款項是否付款");
-        status = "未處理"
-        const paid = false;
-        adjustOrderList(orderId, paid);
+    }else if(e.target.getAttribute("data-paid") == "true"){
+        let yes = window.confirm("請確認是否更改狀態")
+        if( yes== true){
+            const paid = false;
+            adjustOrderList(orderId, paid);
+        }
     }
 })
 
@@ -119,3 +115,23 @@ let init = ()=>{
 }
 init();
 
+let chartData = [];
+
+let chart = c3.generate({
+    bindto: '#chart', // HTML 元素綁定
+    data: {
+        type: "pie",
+        columns: [
+            ['Louvre 雙人床架', 1],
+            ['Antony 雙人床架', 2],
+            ['Anty 雙人床架', 3],
+            ['其他', 4],
+        ],
+        colors:{
+            "Louvre 雙人床架":"#DACBFF",
+            "Antony 雙人床架":"#9D7FEA",
+            "Anty 雙人床架": "#5434A7",
+            "其他": "#301E5F",
+        }
+    },
+});

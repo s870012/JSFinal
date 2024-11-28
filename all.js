@@ -229,8 +229,8 @@ let orderData = {
 };
 function createOrder() {
   axios.post(`${customerApi}/orders`, orderData)
-  .then(function (response) {
-    console.log(response.data);
+  .then(function () {
+    
   })
   .catch(function(error){
     console.log(error.response.data);
