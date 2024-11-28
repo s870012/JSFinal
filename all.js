@@ -93,13 +93,13 @@ function renderCartList(){
                                 <p>${item.product.title}</p>
                             </div>
                         </td>
-                        <td>NT$${item.product.origin_price}</td>
+                        <td>NT$${item.product.price}</td>
                         <td >
                           <button class="material-icons remove" data-id="${item.id}" data-Num="${item.quantity}">remove</button>
                           <span>${item.quantity}</span>
                           <button class="material-icons add" data-id="${item.id}" data-Num="${item.quantity}">add</button>
                         </td>
-                        <td>NT$${item.product.price}</td>
+                        <td>NT$${item.product.price * item.quantity}</td>
                         <td class="discardBtn">
                             <a href="#" class="material-icons" id="discardItemBtn" data-id="${item.id}">
                                 clear
