@@ -7,6 +7,7 @@ const config = {
       'Authorization': token
     }
   }
+const date = new Date()
 
 //取得訂單資料
 let orderDataList = [];
@@ -15,6 +16,7 @@ let getOrderList = () => {
   .then(response=>{
     orderDataList = response.data.orders;
     renderOrderList();
+    renderChart();
   })
   .catch(err => {
     console.log(err);
@@ -37,7 +39,7 @@ let renderOrderList = ()=>{
                         <td>
                             <p>${item.products[0].title}</p>
                         </td>
-                        <td>2021/03/08</td>
+                        <td>${date.toLocaleDateString()}</td>
                         <td class="orderStatus" >
                             <a href="#" id="orderStatus" data-id="${item.id}" data-paid="${item.paid}">${item.paid == true ? "已處理" : "未處理"}</a>
                         </td>
@@ -110,28 +112,49 @@ orderList.addEventListener("click", e => {
     }
 })
 
+// 渲染C3資料
+let chartData = [];
+let renderChart = () => {
+    let ary = [];
+    let obj = {};
+    orderDataList.forEach(item =>{
+        for( let i=0; i<item.products.length;i++){
+            ary.push(item.products[i])
+        }
+    })
+
+    ary.forEach(item =>{
+        if(obj[item.title] == undefined){
+            obj[item.title] = 1;
+        }else if (obj[item.title] !== undefined){
+            obj[item.title] ++;
+        }
+    })
+
+    let title = Object.keys(obj)
+    title.forEach(item=>{
+        let arySec =[];
+        arySec.push(item);
+        arySec.push(obj[item])
+        chartData.push(arySec)
+    })
+    
+    // C3圖表設定
+    let chart = c3.generate({
+        bindto: '#chart', // HTML 元素綁定
+        data: {
+            type: "pie",
+            columns: chartData,
+            color:{
+                pattern:['#DACBFF','#9D7FEA','#5434A7','#301E5F']
+            }
+        },
+    });
+}
+
 let init = ()=>{
     getOrderList();
 }
 init();
 
-let chartData = [];
 
-let chart = c3.generate({
-    bindto: '#chart', // HTML 元素綁定
-    data: {
-        type: "pie",
-        columns: [
-            ['Louvre 雙人床架', 1],
-            ['Antony 雙人床架', 2],
-            ['Anty 雙人床架', 3],
-            ['其他', 4],
-        ],
-        colors:{
-            "Louvre 雙人床架":"#DACBFF",
-            "Antony 雙人床架":"#9D7FEA",
-            "Anty 雙人床架": "#5434A7",
-            "其他": "#301E5F",
-        }
-    },
-});
